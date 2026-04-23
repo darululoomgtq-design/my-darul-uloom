@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+</head>
+<body>
+
+<h2>Welcome Student</h2>
+
+<p><b>Name:</b> <span id="name"></span></p>
+<p><b>Attendance:</b> <span id="attendance"></span></p>
+
+<button onclick="logout()">Logout</button>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  // 🔥 YAHAN APNA DATA DAALO
+  const supabaseUrl = "YOUR_PROJECT_URL";
+  const supabaseKey = "YOUR_ANON_KEY";
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // 🔐 Permanent Login Check
+  const studentId = localStorage.getItem("student_id");
+
+  if (!studentId) {
+    alert("Please login first!");
+    window.location.href = "index.html";
+  }
+
+  // 📊 Data Fetch Function
+  async function loadData() {
+    const { data, error } = await supabase
+      .from("students")
+      .select("*")
+      .eq("student_id", studentId)
+      .single();
+
+    if (error) {
+      alert("Error loading data");
+      console.log(error);
+      return;
+    }
+
+    // 🧾 Data Show
+    document.getElementById("name").innerText = data.name;
+    document.getElementById("attendance").innerText = data.attendance;
+  }
+
+  loadData();
+
+  // 🚪 Logout
+  window.logout = function () {
+    localStorage.removeItem("student_id");
+    window.location.href = "index.html";
+  };
+</script>
+
+</body>
+</html>
